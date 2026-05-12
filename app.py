@@ -271,6 +271,8 @@ if not st.session_state.finished:
 
                     if st.session_state.difficulty == "hard":
 
+                        st.session_state.difficulty = "medium"  # 🔥 СИНХРОНИЗАЦИЯ
+
                         available_questions = [
                             q for q in questions
                             if q["difficulty"] == "medium"
@@ -278,6 +280,8 @@ if not st.session_state.finished:
                         ]
 
                     elif st.session_state.difficulty == "medium":
+
+                        st.session_state.difficulty = "easy"  # 🔥 СИНХРОНИЗАЦИЯ
 
                         available_questions = [
                             q for q in questions
