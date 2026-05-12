@@ -242,6 +242,9 @@ if not st.session_state.finished:
         st.subheader(f"Вопрос {st.session_state.question_number}")
         st.progress((st.session_state.question_number - 1) / 5)
 
+        if group == "Экспериментальная":
+            st.info(f"Сложность: {st.session_state.difficulty}")
+
         st.write(q["question"])
 
         answer = st.radio(
