@@ -5,8 +5,10 @@ import random
 
 st.title("Адаптивное тестирование по информатике")
 
-# ---------------- ВОПРОСЫ ----------------
+# ---------------- ФАЙЛ ----------------
+file_path = "results.csv"
 
+# ---------------- ВОПРОСЫ ----------------
 questions = [
 
     # ---------------- EASY ----------------
@@ -173,7 +175,6 @@ questions = [
 ]
 
 # ---------------- ВВОД ----------------
-
 name = st.text_input("Введите имя")
 
 group = st.selectbox(
@@ -181,8 +182,19 @@ group = st.selectbox(
     ["Контрольная", "Экспериментальная"]
 )
 
-# ---------------- SESSION STATE ----------------
+# 🔥 СБРОС при смене интерфейса (ВАЖНО)
+st.session_state.setdefault("prev_group", group)
 
+if st.session_state.prev_group != group:
+    st.session_state.score = 0
+    st.session_state.question_number = 1
+    st.session_state.used_questions = []
+    st.session_state.current_question = None
+    st.session_state.show_hint = False
+    st.session_state.last_hint = ""
+    st.session_state.prev_group = group
+
+# ---------------- SESSION STATE ----------------
 if "score" not in st.session_state:
     st.session_state.score = 0
 
@@ -208,53 +220,27 @@ if "last_hint" not in st.session_state:
     st.session_state.last_hint = ""
 
 # ---------------- ЗАВЕРШЕНИЕ ----------------
-
 if st.session_state.question_number > 5:
     st.session_state.finished = True
 
-# ---------------- ФИЛЬТР ----------------
-
-if group == "Экспериментальная":
-
-    available_questions = [
-        q for q in questions
-        if q["difficulty"] == st.session_state.difficulty
-        and q["question"] not in st.session_state.used_questions
-    ]
-
-    if not available_questions:
-        available_questions = [
-            q for q in questions
-            if q["question"] not in st.session_state.used_questions
-        ]
-
-else:
-
-    available_questions = [
-        q for q in questions
-        if q["question"] not in st.session_state.used_questions
-    ]
+# ---------------- ВЫБОР ВОПРОСОВ ----------------
+available_questions = [
+    q for q in questions
+    if q["question"] not in st.session_state.used_questions
+]
 
 # ---------------- ТЕСТ ----------------
-
 if not st.session_state.finished:
 
     if available_questions:
 
         if st.session_state.current_question is None:
-
-            if group == "Контрольная":
-                st.session_state.current_question = available_questions[0]
-            else:
-                st.session_state.current_question = random.choice(available_questions)
+            st.session_state.current_question = random.choice(available_questions)
 
         q = st.session_state.current_question
 
         st.subheader(f"Вопрос {st.session_state.question_number}")
-        st.progress(st.session_state.question_number / 5)
-
-        if group == "Экспериментальная":
-            st.info(f"Сложность: {st.session_state.difficulty}")
+        st.progress((st.session_state.question_number - 1) / 5)
 
         st.write(q["question"])
 
@@ -265,9 +251,8 @@ if not st.session_state.finished:
             key=st.session_state.question_number
         )
 
-        # ---------------- ПОДСКАЗКА ----------------
-
-        if st.session_state.show_hint:
+        # ---------------- ПОДСКАЗКА (ТОЛЬКО ЭКСПЕРИМЕНТ) ----------------
+        if group == "Экспериментальная" and st.session_state.show_hint:
 
             st.warning(f"Подсказка: {st.session_state.last_hint}")
 
@@ -278,10 +263,10 @@ if not st.session_state.finished:
 
                 st.session_state.question_number += 1
                 st.session_state.current_question = None
+
                 st.rerun()
 
         # ---------------- ОТВЕТ ----------------
-
         elif st.button("Ответить"):
 
             if answer is None:
@@ -290,21 +275,18 @@ if not st.session_state.finished:
 
             st.session_state.used_questions.append(q["question"])
 
+            # ПРАВИЛЬНО
             if answer == q["answer"]:
 
                 st.success("Верно!")
                 st.session_state.score += 1
 
-                if group == "Экспериментальная":
-                    if st.session_state.difficulty == "easy":
-                        st.session_state.difficulty = "medium"
-                    elif st.session_state.difficulty == "medium":
-                        st.session_state.difficulty = "hard"
-
                 st.session_state.question_number += 1
                 st.session_state.current_question = None
+
                 st.rerun()
 
+            # НЕПРАВИЛЬНО
             else:
 
                 st.error("Неверно!")
@@ -312,12 +294,6 @@ if not st.session_state.finished:
                 if group == "Экспериментальная":
                     st.session_state.show_hint = True
                     st.session_state.last_hint = q["hint"]
-
-                    if st.session_state.difficulty == "hard":
-                        st.session_state.difficulty = "medium"
-                    elif st.session_state.difficulty == "medium":
-                        st.session_state.difficulty = "easy"
-
                 else:
                     st.session_state.question_number += 1
                     st.session_state.current_question = None
@@ -325,7 +301,6 @@ if not st.session_state.finished:
                 st.rerun()
 
 # ---------------- РЕЗУЛЬТАТ ----------------
-
 else:
 
     st.success(f"{name}, результат: {st.session_state.score} из 5")
@@ -336,42 +311,39 @@ else:
         "Баллы": [st.session_state.score]
     })
 
-    file = "results.csv"
-
-    if os.path.exists(file):
-        old = pd.read_csv(file)
+    if os.path.exists(file_path):
+        old = pd.read_csv(file_path)
         new = pd.concat([old, df], ignore_index=True)
-        new.to_csv(file, index=False)
+        new.to_csv(file_path, index=False)
     else:
-        df.to_csv(file, index=False)
+        df.to_csv(file_path, index=False)
 
     st.info("Результат сохранён")
-    if os.path.exists(file):
 
-        with open(file, "rb") as f:
-
+    # Скачать
+    if os.path.exists(file_path):
+        with open(file_path, "rb") as f:
             st.download_button(
-            label="Скачать результаты CSV",
-            data=f,
-            file_name="results.csv",
-            mime="text/csv"
-        )
+                "Скачать CSV",
+                f,
+                file_name="results.csv",
+                mime="text/csv"
+            )
 
+    # Очистка
+    if st.button("Очистить результаты"):
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            st.success("Файл удалён")
+            st.rerun()
+
+    # Рестарт
     if st.button("Начать заново"):
         st.session_state.score = 0
         st.session_state.question_number = 1
-        st.session_state.difficulty = "medium"
         st.session_state.used_questions = []
-        st.session_state.finished = False
         st.session_state.current_question = None
         st.session_state.show_hint = False
         st.session_state.last_hint = ""
 
-if st.button("Очистить результаты"):
-
-    if os.path.exists(file):
-
-        os.remove(file)
-
-        st.success("results.csv удалён")
         st.rerun()
