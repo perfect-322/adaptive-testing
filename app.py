@@ -257,45 +257,42 @@ if not st.session_state.finished:
                 idx = st.session_state.question_number - 1
                 st.session_state.current_question = st.session_state.control_order[idx]
 
-            else:
-                # ---------------- ЭКСПЕРИМЕНТАЛЬНАЯ ----------------
+           else:
+    # ---------------- ЭКСПЕРИМЕНТАЛЬНАЯ ----------------
 
-                # 1. сначала пытаемся взять по текущей сложности
-                available_questions = [
-                    q for q in questions
-                    if q["difficulty"] == st.session_state.difficulty
-                    and q["question"] not in st.session_state.used_questions
-                ]
+    available_questions = [
+        q for q in questions
+        if q["difficulty"] == st.session_state.difficulty
+        and q["question"] not in st.session_state.used_questions
+    ]
 
-                # ---------------- FALLBACK ЛОГИКА (ВАЖНО) ----------------
+    # FALLBACK
+    if not available_questions:
 
-                # если нет вопросов текущей сложности → спускаемся по уровням
-                if not available_questions:
+        if st.session_state.difficulty == "hard":
 
-                     if st.session_state.difficulty == "hard":
+            available_questions = [
+                q for q in questions
+                if q["difficulty"] == "medium"
+                and q["question"] not in st.session_state.used_questions
+            ]
 
-                        available_questions = [
-                            q for q in questions
-                            if q["difficulty"] == "medium"
-                            and q["question"] not in st.session_state.used_questions
-                        ]
+        elif st.session_state.difficulty == "medium":
 
-                    elif st.session_state.difficulty == "medium":
+            available_questions = [
+                q for q in questions
+                if q["difficulty"] == "easy"
+                and q["question"] not in st.session_state.used_questions
+            ]
 
-                        available_questions = [
-                            q for q in questions
-                            if q["difficulty"] == "easy"
-                            and q["question"] not in st.session_state.used_questions
-                        ]
+        else:
 
-                    else:
-                        available_questions = [
-                            q for q in questions
-                            if q["question"] not in st.session_state.used_questions
-                        ]
+            available_questions = [
+                q for q in questions
+                if q["question"] not in st.session_state.used_questions
+            ]
 
-                # выбираем вопрос
-                st.session_state.current_question = random.choice(available_questions)
+    st.session_state.current_question = random.choice(available_questions)
 
         q = st.session_state.current_question
 
