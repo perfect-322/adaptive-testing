@@ -173,6 +173,7 @@ questions = [
 ]
 
 # ---------------- ВВОД ----------------
+
 name = st.text_input("Введите имя")
 
 group = st.selectbox(
@@ -181,6 +182,7 @@ group = st.selectbox(
 )
 
 # ---------------- SESSION STATE ----------------
+
 if "score" not in st.session_state:
     st.session_state.score = 0
 
@@ -206,27 +208,53 @@ if "last_hint" not in st.session_state:
     st.session_state.last_hint = ""
 
 # ---------------- ЗАВЕРШЕНИЕ ----------------
+
 if st.session_state.question_number > 5:
     st.session_state.finished = True
 
 # ---------------- ФИЛЬТР ----------------
-available_questions = [
-    q for q in questions
-    if q["question"] not in st.session_state.used_questions
-]
+
+if group == "Экспериментальная":
+
+    available_questions = [
+        q for q in questions
+        if q["difficulty"] == st.session_state.difficulty
+        and q["question"] not in st.session_state.used_questions
+    ]
+
+    if not available_questions:
+        available_questions = [
+            q for q in questions
+            if q["question"] not in st.session_state.used_questions
+        ]
+
+else:
+
+    available_questions = [
+        q for q in questions
+        if q["question"] not in st.session_state.used_questions
+    ]
 
 # ---------------- ТЕСТ ----------------
+
 if not st.session_state.finished:
 
     if available_questions:
 
         if st.session_state.current_question is None:
-            st.session_state.current_question = random.choice(available_questions)
+
+            if group == "Контрольная":
+                st.session_state.current_question = available_questions[0]
+            else:
+                st.session_state.current_question = random.choice(available_questions)
 
         q = st.session_state.current_question
 
         st.subheader(f"Вопрос {st.session_state.question_number}")
-        st.progress((st.session_state.question_number - 1) / 5)
+        st.progress(st.session_state.question_number / 5)
+
+        if group == "Экспериментальная":
+            st.info(f"Сложность: {st.session_state.difficulty}")
 
         st.write(q["question"])
 
@@ -238,6 +266,7 @@ if not st.session_state.finished:
         )
 
         # ---------------- ПОДСКАЗКА ----------------
+
         if st.session_state.show_hint:
 
             st.warning(f"Подсказка: {st.session_state.last_hint}")
@@ -249,10 +278,10 @@ if not st.session_state.finished:
 
                 st.session_state.question_number += 1
                 st.session_state.current_question = None
-
                 st.rerun()
 
         # ---------------- ОТВЕТ ----------------
+
         elif st.button("Ответить"):
 
             if answer is None:
@@ -266,21 +295,37 @@ if not st.session_state.finished:
                 st.success("Верно!")
                 st.session_state.score += 1
 
+                if group == "Экспериментальная":
+                    if st.session_state.difficulty == "easy":
+                        st.session_state.difficulty = "medium"
+                    elif st.session_state.difficulty == "medium":
+                        st.session_state.difficulty = "hard"
+
                 st.session_state.question_number += 1
                 st.session_state.current_question = None
-
                 st.rerun()
 
             else:
 
                 st.error("Неверно!")
 
-                st.session_state.show_hint = True
-                st.session_state.last_hint = q["hint"]
+                if group == "Экспериментальная":
+                    st.session_state.show_hint = True
+                    st.session_state.last_hint = q["hint"]
+
+                    if st.session_state.difficulty == "hard":
+                        st.session_state.difficulty = "medium"
+                    elif st.session_state.difficulty == "medium":
+                        st.session_state.difficulty = "easy"
+
+                else:
+                    st.session_state.question_number += 1
+                    st.session_state.current_question = None
 
                 st.rerun()
 
 # ---------------- РЕЗУЛЬТАТ ----------------
+
 else:
 
     st.success(f"{name}, результат: {st.session_state.score} из 5")
@@ -291,34 +336,27 @@ else:
         "Баллы": [st.session_state.score]
     })
 
-    if os.path.exists(file_path):
-        old = pd.read_csv(file_path)
+    file = "results.csv"
+
+    if os.path.exists(file):
+        old = pd.read_csv(file)
         new = pd.concat([old, df], ignore_index=True)
-        new.to_csv(file_path, index=False)
+        new.to_csv(file, index=False)
     else:
-        df.to_csv(file_path, index=False)
+        df.to_csv(file, index=False)
 
     st.info("Результат сохранён")
+    if os.path.exists(file):
 
-    # ---------------- СКАЧАТЬ ----------------
-    if os.path.exists(file_path):
-        with open(file_path, "rb") as f:
+        with open(file, "rb") as f:
+
             st.download_button(
-                label="Скачать результаты CSV",
-                data=f,
-                file_name="results.csv",
-                mime="text/csv"
-            )
+            label="Скачать результаты CSV",
+            data=f,
+            file_name="results.csv",
+            mime="text/csv"
+        )
 
-    # ---------------- ОЧИСТКА ----------------
-    if st.button("Очистить результаты"):
-
-        if os.path.exists(file_path):
-            os.remove(file_path)
-            st.success("results.csv удалён")
-            st.rerun()
-
-    # ---------------- РЕСТАРТ ----------------
     if st.button("Начать заново"):
         st.session_state.score = 0
         st.session_state.question_number = 1
@@ -329,4 +367,11 @@ else:
         st.session_state.show_hint = False
         st.session_state.last_hint = ""
 
+if st.button("Очистить результаты"):
+
+    if os.path.exists(file):
+
+        os.remove(file)
+
+        st.success("results.csv удалён")
         st.rerun()
