@@ -347,6 +347,16 @@ else:
         df.to_csv(file, index=False)
 
     st.info("Результат сохранён")
+    if os.path.exists(file):
+
+        with open(file, "rb") as f:
+
+            st.download_button(
+            label="Скачать результаты CSV",
+            data=f,
+            file_name="results.csv",
+            mime="text/csv"
+        )
 
     if st.button("Начать заново"):
         st.session_state.score = 0
@@ -358,4 +368,11 @@ else:
         st.session_state.show_hint = False
         st.session_state.last_hint = ""
 
+if st.button("Очистить результаты"):
+
+    if os.path.exists(file):
+
+        os.remove(file)
+
+        st.success("results.csv удалён")
         st.rerun()
