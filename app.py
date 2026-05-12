@@ -246,7 +246,7 @@ if not st.session_state.finished:
         if st.session_state.current_question is None:
 
             if group == "Контрольная":
-                st.session_state.current_question = available_questions[0]
+                st.session_state.current_question = random.choice(available_questions)
             else:
                 st.session_state.current_question = random.choice(available_questions)
 
