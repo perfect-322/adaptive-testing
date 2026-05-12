@@ -211,32 +211,35 @@ if "last_hint" not in st.session_state:
 
 # ---------------- ЗАВЕРШЕНИЕ ----------------
 
-if st.session_state.question_number > 15:
+if len(st.session_state.used_questions) >= 15:
     st.session_state.finished = True
 
 # ---------------- ФИЛЬТР ----------------
 
-if group == "Экспериментальная":
+if group == "Контрольная":
 
+    available_questions = [
+        q for q in questions
+        if q["question"] not in st.session_state.used_questions
+    ]
+
+
+else:
+    # ---------------- ЭКСПЕРИМЕНТАЛЬНАЯ ГРУППА ----------------
+
+    # 1. сначала по сложности
     available_questions = [
         q for q in questions
         if q["difficulty"] == st.session_state.difficulty
         and q["question"] not in st.session_state.used_questions
     ]
 
+    # 2. fallback — любые оставшиеся
     if not available_questions:
         available_questions = [
             q for q in questions
             if q["question"] not in st.session_state.used_questions
         ]
-
-
-else:
-
-    available_questions = [
-        q for q in questions
-        if q["question"] not in st.session_state.used_questions
-    ]
 
 # ---------------- ТЕСТ ----------------
 
