@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import random
 
+file = "results.csv"
+
 st.title("Адаптивное тестирование по информатике")
 
 # ---------------- ВОПРОСЫ ----------------
@@ -251,7 +253,7 @@ if not st.session_state.finished:
         q = st.session_state.current_question
 
         st.subheader(f"Вопрос {st.session_state.question_number}")
-        st.progress(st.session_state.question_number / 5)
+        st.progress((st.session_state.question_number - 1) / 5)
 
         if group == "Экспериментальная":
             st.info(f"Сложность: {st.session_state.difficulty}")
@@ -335,8 +337,6 @@ else:
         "Группа": [group],
         "Баллы": [st.session_state.score]
     })
-
-    file = "results.csv"
 
     if os.path.exists(file):
         old = pd.read_csv(file)
