@@ -299,9 +299,17 @@ if not st.session_state.finished:
 
                 st.error("Неверно!")
 
-                if group == "Экспериментальная":
-                    st.session_state.show_hint = True
-                    st.session_state.last_hint = q["hint"]
+            if group == "Экспериментальная":
+
+                st.session_state.show_hint = True
+                st.session_state.last_hint = q["hint"]
+
+                # АДАПТАЦИЯ ВНИЗ
+                if st.session_state.difficulty == "hard":
+                    st.session_state.difficulty = "medium"
+
+                elif st.session_state.difficulty == "medium":
+                    st.session_state.difficulty = "easy"
                 else:
                     st.session_state.question_number += 1
                     st.session_state.current_question = None
