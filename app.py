@@ -279,19 +279,15 @@ if not st.session_state.finished:
             key=st.session_state.question_number
         )
 
-        # ---------------- ПОДСКАЗКА ----------------
-
+# ---------------- ПОДСКАЗКА ----------------
         if st.session_state.show_hint:
-
             st.warning(f"Подсказка: {st.session_state.last_hint}")
-
             if st.button("Далее"):
-
                 st.session_state.show_hint = False
                 st.session_state.last_hint = ""
-
                 st.session_state.question_number += 1
-                st.session_state.current_question = None
+                # ОБЯЗАТЕЛЬНО ОБНУЛЯЕМ ВОПРОС ЗДЕСЬ
+                st.session_state.current_question = None 
                 st.rerun()
 
 # ---------------- ОТВЕТ ----------------
