@@ -154,37 +154,42 @@ if not st.session_state.finished:
     if st.session_state.current_question is None:
         
         if group == "Экспериментальная":
-            # Ищем вопросы нужной сложности
-            available_questions = [
-                q for q in questions 
-                if q["difficulty"] == st.session_state.difficulty 
-                and q["question"] not in st.session_state.used_questions
-            ]
             
-            # Если вопросы нужной сложности закончились (Fall-back логика)
-            if not available_questions:
-                if st.session_state.difficulty == "hard":
-                    # Если закончились сложные, ищем средние, затем легкие
-                    available_questions = [q for q in questions if q["difficulty"] == "medium" and q["question"] not in st.session_state.used_questions]
-                    if not available_questions:
-                        available_questions = [q for q in questions if q["difficulty"] == "easy" and q["question"] not in st.session_state.used_questions]
+            # НОВЫЙ БЛОК: Жестко фиксируем первый вопрос
+            if st.session_state.question_number == 1:
+                # Берем самый первый вопрос со сложностью medium из списка
+                medium_questions = [q for q in questions if q["difficulty"] == "medium"]
+                st.session_state.current_question = medium_questions[0]
+                st.session_state.difficulty = "medium"
                 
-                elif st.session_state.difficulty == "easy":
-                    # Если закончились легкие, ищем средние, затем сложные
-                    available_questions = [q for q in questions if q["difficulty"] == "medium" and q["question"] not in st.session_state.used_questions]
-                    if not available_questions:
+            # Старая логика для 2-го и последующих вопросов
+            else:
+                available_questions = [
+                    q for q in questions 
+                    if q["difficulty"] == st.session_state.difficulty 
+                    and q["question"] not in st.session_state.used_questions
+                ]
+                
+                # Если вопросы нужной сложности закончились (Fall-back логика)
+                if not available_questions:
+                    if st.session_state.difficulty == "hard":
+                        available_questions = [q for q in questions if q["difficulty"] == "medium" and q["question"] not in st.session_state.used_questions]
+                        if not available_questions:
+                            available_questions = [q for q in questions if q["difficulty"] == "easy" and q["question"] not in st.session_state.used_questions]
+                    
+                    elif st.session_state.difficulty == "easy":
+                        available_questions = [q for q in questions if q["difficulty"] == "medium" and q["question"] not in st.session_state.used_questions]
+                        if not available_questions:
+                            available_questions = [q for q in questions if q["difficulty"] == "hard" and q["question"] not in st.session_state.used_questions]
+                    
+                    elif st.session_state.difficulty == "medium":
                         available_questions = [q for q in questions if q["difficulty"] == "hard" and q["question"] not in st.session_state.used_questions]
+                        if not available_questions:
+                            available_questions = [q for q in questions if q["difficulty"] == "easy" and q["question"] not in st.session_state.used_questions]
                 
-                elif st.session_state.difficulty == "medium":
-                    # Если закончились средние, идем в сложные, если нет - в легкие
-                    available_questions = [q for q in questions if q["difficulty"] == "hard" and q["question"] not in st.session_state.used_questions]
-                    if not available_questions:
-                        available_questions = [q for q in questions if q["difficulty"] == "easy" and q["question"] not in st.session_state.used_questions]
-            
-            # Если хоть что-то нашли, ОБНОВЛЯЕМ текущую сложность системы, чтобы она соответствовала выбранному вопросу
-            if available_questions:
-                st.session_state.current_question = random.choice(available_questions)
-                st.session_state.difficulty = st.session_state.current_question["difficulty"]
+                if available_questions:
+                    st.session_state.current_question = random.choice(available_questions)
+                    st.session_state.difficulty = st.session_state.current_question["difficulty"]
                 
         else:
             # Для контрольной группы берем любой неиспользованный вопрос
