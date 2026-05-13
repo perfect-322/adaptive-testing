@@ -154,49 +154,38 @@ if not st.session_state.finished:
     if st.session_state.current_question is None:
         
         if group == "Экспериментальная":
-            
-            # 1. Если это самый первый вопрос — берем строго первый Medium из списка
+            # ПРИНУДИТЕЛЬНО ставим Medium для первого вопроса
             if st.session_state.question_number == 1:
+                st.session_state.difficulty = "medium" # Сбрасываем сложность в medium
                 medium_questions = [q for q in questions if q["difficulty"] == "medium"]
                 st.session_state.current_question = medium_questions[0]
-                st.session_state.difficulty = "medium"
-                
-            # 2. Логика для всех последующих вопросов
+            
             else:
+                # Логика для вопросов со 2-го по 15-й
                 available_questions = [
                     q for q in questions 
                     if q["difficulty"] == st.session_state.difficulty 
                     and q["question"] not in st.session_state.used_questions
                 ]
                 
-                # Fall-back (если нужная сложность закончилась)
+                # Если нужная сложность закончилась (Fall-back)
                 if not available_questions:
-                    if st.session_state.difficulty == "hard":
-                        available_questions = [q for q in questions if q["difficulty"] == "medium" and q["question"] not in st.session_state.used_questions]
-                        if not available_questions:
-                            available_questions = [q for q in questions if q["difficulty"] == "easy" and q["question"] not in st.session_state.used_questions]
+                    # Ищем любую доступную сложность по приоритету
+                    order = ["hard", "medium", "easy"] if st.session_state.difficulty == "hard" else ["medium", "hard", "easy"]
+                    if st.session_state.difficulty == "easy": order = ["medium", "hard", "easy"]
                     
-                    elif st.session_state.difficulty == "easy":
-                        available_questions = [q for q in questions if q["difficulty"] == "medium" and q["question"] not in st.session_state.used_questions]
-                        if not available_questions:
-                            available_questions = [q for q in questions if q["difficulty"] == "hard" and q["question"] not in st.session_state.used_questions]
-                    
-                    elif st.session_state.difficulty == "medium":
-                        available_questions = [q for q in questions if q["difficulty"] == "hard" and q["question"] not in st.session_state.used_questions]
-                        if not available_questions:
-                            available_questions = [q for q in questions if q["difficulty"] == "easy" and q["question"] not in st.session_state.used_questions]
+                    for diff in order:
+                        available_questions = [q for q in questions if q["difficulty"] == diff and q["question"] not in st.session_state.used_questions]
+                        if available_questions:
+                            st.session_state.difficulty = diff
+                            break
                 
                 if available_questions:
                     st.session_state.current_question = random.choice(available_questions)
-                    # Синхронизируем сложность сессии с реально выбранным вопросом
-                    st.session_state.difficulty = st.session_state.current_question["difficulty"]
         
         else:
-            # Логика для Контрольной группы (полный рандом)
-            available_questions = [
-                q for q in questions 
-                if q["question"] not in st.session_state.used_questions
-            ]
+            # Контрольная группа: полный рандом из всех оставшихся
+            available_questions = [q for q in questions if q["question"] not in st.session_state.used_questions]
             if available_questions:
                 st.session_state.current_question = random.choice(available_questions)
 
