@@ -209,38 +209,21 @@ if "show_hint" not in st.session_state:
 if "last_hint" not in st.session_state:
     st.session_state.last_hint = ""
 
-if "next_difficulty" not in st.session_state:
-    st.session_state.next_difficulty = None
-
 # ---------------- ЗАВЕРШЕНИЕ ----------------
 
-if st.session_state.question_number > 15:
+if st.session_state.question_number > 5:
     st.session_state.finished = True
 
 # ---------------- ФИЛЬТР ----------------
 
 if group == "Экспериментальная":
+
     available_questions = [
         q for q in questions
         if q["difficulty"] == st.session_state.difficulty
         and q["question"] not in st.session_state.used_questions
     ]
 
-    # ИСПРАВЛЕНИЕ: Если вопросы текущей сложности кончились, меняем сложность в сессии
-    if not available_questions:
-        if st.session_state.difficulty == "hard":
-            st.session_state.difficulty = "medium"
-        elif st.session_state.difficulty == "medium":
-            st.session_state.difficulty = "easy"
-        
-        # Обновляем список доступных вопросов после смены сложности
-        available_questions = [
-            q for q in questions
-            if q["difficulty"] == st.session_state.difficulty
-            and q["question"] not in st.session_state.used_questions
-        ]
-
-    # Если кончились вообще все вопросы данной сложности (крайний случай)
     if not available_questions:
         available_questions = [
             q for q in questions
@@ -248,6 +231,7 @@ if group == "Экспериментальная":
         ]
 
 else:
+
     available_questions = [
         q for q in questions
         if q["question"] not in st.session_state.used_questions
@@ -270,7 +254,7 @@ if not st.session_state.finished:
         q = st.session_state.current_question
 
         st.subheader(f"Вопрос {st.session_state.question_number}")
-        st.progress((st.session_state.question_number - 1) / 15)
+        st.progress((st.session_state.question_number - 1) / 5)
 
         if group == "Экспериментальная":
             st.info(f"Сложность: {st.session_state.difficulty}")
@@ -285,89 +269,71 @@ if not st.session_state.finished:
         )
 
         # ---------------- ПОДСКАЗКА ----------------
-if st.session_state.show_hint:
-    st.warning(f"Подсказка: {st.session_state.last_hint}")
 
-    if st.button("Далее"):
+        if st.session_state.show_hint:
 
-        # ДОБАВЛЯЕМ ВОПРОС В ИСПОЛЬЗОВАННЫЕ ТОЛЬКО ПОСЛЕ ЗАВЕРШЕНИЯ
-        st.session_state.used_questions.append(q["question"])
+            st.warning(f"Подсказка: {st.session_state.last_hint}")
 
-        # МЕНЯЕМ СЛОЖНОСТЬ ТОЛЬКО ПОСЛЕ ЗАВЕРШЕНИЯ ВОПРОСА
-        if st.session_state.next_difficulty is not None:
-            st.session_state.difficulty = st.session_state.next_difficulty
+            if st.button("Далее"):
 
-        st.session_state.next_difficulty = None
-        st.session_state.show_hint = False
-        st.session_state.last_hint = ""
-        st.session_state.question_number += 1
-        st.session_state.current_question = None
+                st.session_state.show_hint = False
+                st.session_state.last_hint = ""
 
-        st.rerun()
+                st.session_state.question_number += 1
+                st.session_state.current_question = None
+                st.rerun()
+
         # ---------------- ОТВЕТ ----------------
-elif st.button("Ответить"):
 
-    if answer is None:
-        st.warning("Выберите ответ!")
-        st.stop()
+        elif st.button("Ответить"):
 
-    if answer == q["answer"]:
+            if answer is None:
+                st.warning("Выберите ответ!")
+                st.stop()
 
-        # ВОПРОС ЗАВЕРШЕН УСПЕШНО
-        st.session_state.used_questions.append(q["question"])
-
-        st.success("Верно!")
-        st.session_state.score += 1
-
-        if group == "Экспериментальная":
-
-            if st.session_state.difficulty == "easy":
-                st.session_state.difficulty = "medium"
-
-            elif st.session_state.difficulty == "medium":
-                st.session_state.difficulty = "hard"
-
-        st.session_state.question_number += 1
-        st.session_state.current_question = None
-
-        st.rerun()
-
-    else:
-
-        st.error("Неверно!")
-
-        if group == "Экспериментальная":
-
-            st.session_state.show_hint = True
-            st.session_state.last_hint = q["hint"]
-
-            # ТЕПЕРЬ СЛОЖНОСТЬ НЕ МЕНЯЕТСЯ СРАЗУ
-            # А СОХРАНЯЕТСЯ ДЛЯ СМЕНЫ ПОСЛЕ "ДАЛЕЕ"
-
-            if st.session_state.difficulty == "hard":
-                st.session_state.next_difficulty = "medium"
-
-            elif st.session_state.difficulty == "medium":
-                st.session_state.next_difficulty = "easy"
-
-            else:
-                st.session_state.next_difficulty = "easy"
-
-        else:
-
-            # ДЛЯ КОНТРОЛЬНОЙ ГРУППЫ
             st.session_state.used_questions.append(q["question"])
 
-            st.session_state.question_number += 1
-            st.session_state.current_question = None
+            if answer == q["answer"]:
 
-        st.rerun()
+                st.success("Верно!")
+                st.session_state.score += 1
+
+                st.session_state.current_question = None
+
+                if group == "Экспериментальная":
+                    if st.session_state.difficulty == "easy":
+                        st.session_state.difficulty = "medium"
+                    elif st.session_state.difficulty == "medium":
+                        st.session_state.difficulty = "hard"
+
+                st.session_state.question_number += 1
+                st.session_state.current_question = None
+                st.rerun()
+
+            else:
+
+                st.error("Неверно!")
+
+                if group == "Экспериментальная":
+                    st.session_state.show_hint = True
+                    st.session_state.last_hint = q["hint"]
+
+                    if st.session_state.difficulty == "hard":
+                        st.session_state.difficulty = "medium"
+                    elif st.session_state.difficulty == "medium":
+                        st.session_state.difficulty = "easy"
+
+                else:
+                    st.session_state.question_number += 1
+                    st.session_state.current_question = None
+
+                st.rerun()
 
 # ---------------- РЕЗУЛЬТАТ ----------------
 
 else:
 
-    st.success(f"{name}, результат: {st.session_state.score} из 15")
+    st.success(f"{name}, результат: {st.session_state.score} из 5")
 
     df = pd.DataFrame({
         "Имя": [name],
@@ -403,7 +369,6 @@ else:
         st.session_state.current_question = None
         st.session_state.show_hint = False
         st.session_state.last_hint = ""
-        st.session_state.next_difficulty = None
 
 if st.button("Очистить результаты"):
 
