@@ -276,11 +276,20 @@ if not st.session_state.finished:
 
             if st.button("Далее"):
 
+                # СНАЧАЛА уменьшаем сложность
+                if group == "Экспериментальная":
+                    if st.session_state.difficulty == "hard":
+                        st.session_state.difficulty = "medium"
+                    elif st.session_state.difficulty == "medium":
+                        st.session_state.difficulty = "easy"
+
+                # потом продолжаем тест
                 st.session_state.show_hint = False
                 st.session_state.last_hint = ""
 
                 st.session_state.question_number += 1
                 st.session_state.current_question = None
+
                 st.rerun()
 
         # ---------------- ОТВЕТ ----------------
@@ -317,11 +326,6 @@ if not st.session_state.finished:
                 if group == "Экспериментальная":
                     st.session_state.show_hint = True
                     st.session_state.last_hint = q["hint"]
-
-                    if st.session_state.difficulty == "hard":
-                        st.session_state.difficulty = "medium"
-                    elif st.session_state.difficulty == "medium":
-                        st.session_state.difficulty = "easy"
 
                 else:
                     st.session_state.question_number += 1
