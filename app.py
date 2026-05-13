@@ -154,38 +154,48 @@ if not st.session_state.finished:
     if st.session_state.current_question is None:
         
         if group == "Экспериментальная":
-            # ПРИНУДИТЕЛЬНО ставим Medium для первого вопроса
+            # Если это самый первый вопрос, принудительно ставим Medium
             if st.session_state.question_number == 1:
-                st.session_state.difficulty = "medium" # Сбрасываем сложность в medium
-                medium_questions = [q for q in questions if q["difficulty"] == "medium"]
-                st.session_state.current_question = medium_questions[0]
-            
-            else:
-                # Логика для вопросов со 2-го по 15-й
-                available_questions = [
-                    q for q in questions 
-                    if q["difficulty"] == st.session_state.difficulty 
-                    and q["question"] not in st.session_state.used_questions
-                ]
+                st.session_state.difficulty = "medium"
+
+            # Фильтруем доступные вопросы по ТЕКУЩЕЙ сложности
+            available_questions = [
+                q for q in questions 
+                if q["difficulty"] == st.session_state.difficulty 
+                and q["question"] not in st.session_state.used_questions
+            ]
+
+            # Если вопросы нужной сложности закончились, ищем ближайшие доступные
+            if not available_questions:
+                # Приоритеты поиска, если целевой уровень пуст
+                if st.session_state.difficulty == "hard":
+                    alt_orders = ["medium", "easy"]
+                elif st.session_state.difficulty == "medium":
+                    alt_orders = ["hard", "easy"]
+                else: # easy
+                    alt_orders = ["medium", "hard"]
                 
-                # Если нужная сложность закончилась (Fall-back)
-                if not available_questions:
-                    # Ищем любую доступную сложность по приоритету
-                    order = ["hard", "medium", "easy"] if st.session_state.difficulty == "hard" else ["medium", "hard", "easy"]
-                    if st.session_state.difficulty == "easy": order = ["medium", "hard", "easy"]
-                    
-                    for diff in order:
-                        available_questions = [q for q in questions if q["difficulty"] == diff and q["question"] not in st.session_state.used_questions]
-                        if available_questions:
-                            st.session_state.difficulty = diff
-                            break
-                
-                if available_questions:
-                    st.session_state.current_question = random.choice(available_questions)
+                for alt_diff in alt_orders:
+                    available_questions = [
+                        q for q in questions 
+                        if q["difficulty"] == alt_diff 
+                        and q["question"] not in st.session_state.used_questions
+                    ]
+                    if available_questions:
+                        # Нашли замену — обновляем сложность сессии под этот вопрос
+                        st.session_state.difficulty = alt_diff
+                        break
+
+            # Выбираем вопрос
+            if available_questions:
+                st.session_state.current_question = random.choice(available_questions)
         
         else:
-            # Контрольная группа: полный рандом из всех оставшихся
-            available_questions = [q for q in questions if q["question"] not in st.session_state.used_questions]
+            # Контрольная группа: просто случайный из всех оставшихся
+            available_questions = [
+                q for q in questions 
+                if q["question"] not in st.session_state.used_questions
+            ]
             if available_questions:
                 st.session_state.current_question = random.choice(available_questions)
 
