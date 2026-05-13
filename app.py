@@ -223,21 +223,21 @@ if group == "Экспериментальная":
         and q["question"] not in st.session_state.used_questions
     ]
 
-    # ИСПРАВЛЕНИЕ: Если вопросы текущей сложности кончились, меняем сложность в сессии
+    # Если вопросы текущей сложности кончились, ищем замену
     if not available_questions:
-        if st.session_state.difficulty == "hard":
-            st.session_state.difficulty = "medium"
-        elif st.session_state.difficulty == "medium":
-            st.session_state.difficulty = "easy"
-        
-        # Обновляем список доступных вопросов после смены сложности
-        available_questions = [
-            q for q in questions
-            if q["difficulty"] == st.session_state.difficulty
-            and q["question"] not in st.session_state.used_questions
-        ]
+        # Проверяем другие уровни сложности по порядку
+        for alt_diff in ["medium", "hard", "easy"]: 
+            alt_questions = [
+                q for q in questions
+                if q["difficulty"] == alt_diff
+                and q["question"] not in st.session_state.used_questions
+            ]
+            if alt_questions:
+                st.session_state.difficulty = alt_diff
+                available_questions = alt_questions
+                break
 
-    # Если кончились вообще все вопросы данной сложности (крайний случай)
+    # Если всё еще пусто (крайний случай, когда вопросы кончились совсем)
     if not available_questions:
         available_questions = [
             q for q in questions
@@ -255,12 +255,10 @@ else:
 if not st.session_state.finished:
 
     if available_questions:
-        # ПРОВЕРКА: Если текущий вопрос еще не выбран ИЛИ он не соответствует текущей сложности (для экспериментальной группы)
-        # Это заставит систему перевыбрать вопрос сразу после изменения сложности
+        # Если вопрос не выбран или сложность в сессии изменилась — выбираем новый
         if st.session_state.current_question is None:
             st.session_state.current_question = random.choice(available_questions)
         
-        # Дополнительная проверка для экспериментальной группы, чтобы вопрос точно соответствовал сложности
         elif group == "Экспериментальная" and st.session_state.current_question["difficulty"] != st.session_state.difficulty:
             st.session_state.current_question = random.choice(available_questions)
 
