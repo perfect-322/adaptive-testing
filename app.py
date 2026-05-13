@@ -217,13 +217,27 @@ if st.session_state.question_number > 15:
 # ---------------- ФИЛЬТР ----------------
 
 if group == "Экспериментальная":
-
     available_questions = [
         q for q in questions
         if q["difficulty"] == st.session_state.difficulty
         and q["question"] not in st.session_state.used_questions
     ]
 
+    # ИСПРАВЛЕНИЕ: Если вопросы текущей сложности кончились, меняем сложность в сессии
+    if not available_questions:
+        if st.session_state.difficulty == "hard":
+            st.session_state.difficulty = "medium"
+        elif st.session_state.difficulty == "medium":
+            st.session_state.difficulty = "easy"
+        
+        # Обновляем список доступных вопросов после смены сложности
+        available_questions = [
+            q for q in questions
+            if q["difficulty"] == st.session_state.difficulty
+            and q["question"] not in st.session_state.used_questions
+        ]
+
+    # Если кончились вообще все вопросы данной сложности (крайний случай)
     if not available_questions:
         available_questions = [
             q for q in questions
@@ -231,7 +245,6 @@ if group == "Экспериментальная":
         ]
 
 else:
-
     available_questions = [
         q for q in questions
         if q["question"] not in st.session_state.used_questions
