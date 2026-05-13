@@ -298,6 +298,8 @@ if not st.session_state.finished:
                 st.success("Верно!")
                 st.session_state.score += 1
 
+                st.session_state.current_question = None
+
                 if group == "Экспериментальная":
                     if st.session_state.difficulty == "easy":
                         st.session_state.difficulty = "medium"
