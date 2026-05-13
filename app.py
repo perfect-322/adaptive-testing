@@ -11,215 +11,303 @@ st.title("Адаптивное тестирование по информати�
 
 questions = [
     # EASY
-    {"question": "Что такое алгоритм?",
-     "options": ["Набор случайных действий",
-                 "Последовательность команд для решения задачи",
-                 "Тип данных"],
-     "answer": "Последовательность команд для решения задачи",
-     "difficulty": "easy",
-     "hint": "Алгоритм — это последовательность шагов."},
-
-    {"question": "Какая структура данных работает FIFO?",
-     "options": ["Стек", "Очередь", "Массив"],
-     "answer": "Очередь",
-     "difficulty": "easy",
-     "hint": "First In First Out."},
-
-    {"question": "Какая структура данных LIFO?",
-     "options": ["Стек", "Очередь", "Список"],
-     "answer": "Стек",
-     "difficulty": "easy",
-     "hint": "Last In First Out."},
-
-    {"question": "Что такое массив?",
-     "options": ["Набор элементов одного типа",
-                 "Графика",
-                 "ОС"],
-     "answer": "Набор элементов одного типа",
-     "difficulty": "easy",
-     "hint": "Одинаковые элементы."},
-
-    {"question": "Какой поиск последовательный?",
-     "options": ["Бинарный", "Линейный", "Хеш"],
-     "answer": "Линейный",
-     "difficulty": "easy",
-     "hint": "По одному элементу."},
+    {
+        "question": "Что такое алгоритм?",
+        "options": [
+            "Набор случайных действий",
+            "Последовательность команд для решения задачи",
+            "Тип данных"
+        ],
+        "answer": "Последовательность команд для решения задачи",
+        "difficulty": "easy",
+        "hint": "Алгоритм — это последовательность шагов для решения задачи."
+    },
+    {
+        "question": "Какая структура данных работает по принципу FIFO?",
+        "options": ["Стек", "Очередь", "Массив"],
+        "answer": "Очередь",
+        "difficulty": "easy",
+        "hint": "FIFO = First In First Out."
+    },
+    {
+        "question": "Какая структура данных работает по принципу LIFO?",
+        "options": ["Стек", "Очередь", "Список"],
+        "answer": "Стек",
+        "difficulty": "easy",
+        "hint": "LIFO = Last In First Out."
+    },
+    {
+        "question": "Что такое массив?",
+        "options": [
+            "Набор элементов одного типа",
+            "Графическая фигура",
+            "Операционная система"
+        ],
+        "answer": "Набор элементов одного типа",
+        "difficulty": "easy",
+        "hint": "Массив хранит одинаковые элементы."
+    },
+    {
+        "question": "Какой поиск проверяет элементы по порядку?",
+        "options": ["Бинарный поиск", "Линейный поиск", "Хеширование"],
+        "answer": "Линейный поиск",
+        "difficulty": "easy",
+        "hint": "По одному элементу."
+    },
 
     # MEDIUM
-    {"question": "Сложность линейного поиска?",
-     "options": ["O(log n)", "O(n)", "O(1)"],
-     "answer": "O(n)",
-     "difficulty": "medium",
-     "hint": "Проход по всем элементам."},
-
-    {"question": "Бинарный поиск работает на?",
-     "options": ["Случайном", "Отсортированном", "Пустом"],
-     "answer": "Отсортированном",
-     "difficulty": "medium",
-     "hint": "Нужна сортировка."},
-
-    {"question": "Что такое рекурсия?",
-     "options": ["Хранение", "Функция себя вызывает", "Сортировка"],
-     "answer": "Функция себя вызывает",
-     "difficulty": "medium",
-     "hint": "Самовызов."},
-
-    {"question": "Связный список?",
-     "options": ["Массив", "Узлы со связями", "Графика"],
-     "answer": "Узлы со связями",
-     "difficulty": "medium",
-     "hint": "Узлы + ссылки."},
-
-    {"question": "O(log n)?",
-     "options": ["Логарифм", "Линейная", "Константа"],
-     "answer": "Логарифм",
-     "difficulty": "medium",
-     "hint": "Медленный рост."},
+    {
+        "question": "Какова сложность линейного поиска?",
+        "options": ["O(log n)", "O(n)", "O(1)"],
+        "answer": "O(n)",
+        "difficulty": "medium",
+        "hint": "Проход по всем элементам."
+    },
+    {
+        "question": "Для какого массива применяется бинарный поиск?",
+        "options": [
+            "Для случайного массива",
+            "Для отсортированного массива",
+            "Для пустого массива"
+        ],
+        "answer": "Для отсортированного массива",
+        "difficulty": "medium",
+        "hint": "Нужна сортировка."
+    },
+    {
+        "question": "Что такое рекурсия?",
+        "options": [
+            "Метод хранения данных",
+            "Функция, вызывающая саму себя",
+            "Тип сортировки"
+        ],
+        "answer": "Функция, вызывающая саму себя",
+        "difficulty": "medium",
+        "hint": "Самовызов функции."
+    },
+    {
+        "question": "Что представляет собой связный список?",
+        "options": [
+            "Набор несвязанных данных",
+            "Последовательность узлов со ссылками",
+            "Тип графика"
+        ],
+        "answer": "Последовательность узлов со ссылками",
+        "difficulty": "medium",
+        "hint": "Узлы + ссылки."
+    },
+    {
+        "question": "Что означает O(log n)?",
+        "options": [
+            "Логарифмическая сложность",
+            "Линейная сложность",
+            "Постоянная сложность"
+        ],
+        "answer": "Логарифмическая сложность",
+        "difficulty": "medium",
+        "hint": "Медленный рост."
+    },
 
     # HARD
-    {"question": "Divide & Conquer?",
-     "options": ["Bubble", "QuickSort", "Selection"],
-     "answer": "QuickSort",
-     "difficulty": "hard",
-     "hint": "Разделяй и властвуй."},
-
-    {"question": "QuickSort сложность?",
-     "options": ["O(n²)", "O(n log n)", "O(log n)"],
-     "answer": "O(n log n)",
-     "difficulty": "hard",
-     "hint": "Средняя."},
-
-    {"question": "Дерево?",
-     "options": ["Линейная", "Иерархия", "Массив"],
-     "answer": "Иерархия",
-     "difficulty": "hard",
-     "hint": "Родитель-ребёнок."},
-
-    {"question": "Хеш-таблица?",
-     "options": ["Сортировка", "Ключ-значение", "Граф"],
-     "answer": "Ключ-значение",
-     "difficulty": "hard",
-     "hint": "key → value."},
-
-    {"question": "Поиск в hash?",
-     "options": ["O(1)", "O(n)", "O(log n)"],
-     "answer": "O(1)",
-     "difficulty": "hard",
-     "hint": "Очень быстро."}
+    {
+        "question": "Какой алгоритм сортировки использует 'разделяй и властвуй'?",
+        "options": [
+            "Пузырьковая сортировка",
+            "Быстрая сортировка",
+            "Сортировка выбором"
+        ],
+        "answer": "Быстрая сортировка",
+        "difficulty": "hard",
+        "hint": "Разбиение массива."
+    },
+    {
+        "question": "Какова средняя сложность быстрой сортировки?",
+        "options": ["O(n²)", "O(n log n)", "O(log n)"],
+        "answer": "O(n log n)",
+        "difficulty": "hard",
+        "hint": "Средняя оптимальность."
+    },
+    {
+        "question": "Что такое дерево?",
+        "options": [
+            "Линейная структура",
+            "Иерархическая структура",
+            "Массив"
+        ],
+        "answer": "Иерархическая структура",
+        "difficulty": "hard",
+        "hint": "Родитель-ребёнок."
+    },
+    {
+        "question": "Что такое хеш-таблица?",
+        "options": [
+            "Таблица сортировки",
+            "Ключ-значение",
+            "Граф"
+        ],
+        "answer": "Ключ-значение",
+        "difficulty": "hard",
+        "hint": "Пары данных."
+    },
+    {
+        "question": "Сложность поиска в хеш-таблице?",
+        "options": ["O(1)", "O(n)", "O(log n)"],
+        "answer": "O(1)",
+        "difficulty": "hard",
+        "hint": "Очень быстро."
+    }
 ]
-
-# ---------------- UI ----------------
-
-name = st.text_input("Имя")
-
-group = st.selectbox("Группа", ["Контрольная", "Экспериментальная"])
 
 # ---------------- STATE ----------------
 
 if "score" not in st.session_state:
     st.session_state.score = 0
-if "q_num" not in st.session_state:
-    st.session_state.q_num = 1
+if "question_number" not in st.session_state:
+    st.session_state.question_number = 1
 if "difficulty" not in st.session_state:
     st.session_state.difficulty = "medium"
-if "used" not in st.session_state:
-    st.session_state.used = []
-if "current_q" not in st.session_state:
-    st.session_state.current_q = None
-if "hint" not in st.session_state:
-    st.session_state.hint = False
-if "hint_text" not in st.session_state:
-    st.session_state.hint_text = ""
+if "used_questions" not in st.session_state:
+    st.session_state.used_questions = []
+if "finished" not in st.session_state:
+    st.session_state.finished = False
+if "current_question" not in st.session_state:
+    st.session_state.current_question = None
+if "show_hint" not in st.session_state:
+    st.session_state.show_hint = False
+if "last_hint" not in st.session_state:
+    st.session_state.last_hint = ""
+
+name = st.text_input("Введите имя")
+group = st.selectbox("Выберите группу", ["Контрольная", "Экспериментальная"])
 
 # ---------------- FINISH ----------------
 
-if st.session_state.q_num > 15:
+if st.session_state.question_number > 15:
     st.session_state.finished = True
-else:
-    st.session_state.finished = False
 
 # ---------------- QUESTION PICK ----------------
 
 if not st.session_state.finished:
 
-    if st.session_state.current_q is None:
+    if st.session_state.current_question is None:
 
-        pool = [q for q in questions if q["question"] not in st.session_state.used]
+        if group == "Контрольная":
 
-        if group == "Экспериментальная":
-            pool = [q for q in pool if q["difficulty"] == st.session_state.difficulty]
+            if "control_order" not in st.session_state:
+                st.session_state.control_order = random.sample(questions, 15)
 
-        if not pool:
-            st.session_state.finished = True
-            st.rerun()
+            idx = st.session_state.question_number - 1
+            st.session_state.current_question = st.session_state.control_order[idx]
 
-        st.session_state.current_q = random.choice(pool)
+        else:
 
-    q = st.session_state.current_q
+            candidates = [
+                q for q in questions
+                if q["difficulty"] == st.session_state.difficulty
+                and q["question"] not in st.session_state.used_questions
+            ]
 
-    st.subheader(f"Вопрос {st.session_state.q_num}")
-    st.progress(st.session_state.q_num / 15)
+            if not candidates:
+                order = ["hard", "medium", "easy"]
+                i = order.index(st.session_state.difficulty)
+                if i < len(order) - 1:
+                    st.session_state.difficulty = order[i + 1]
+
+                candidates = [
+                    q for q in questions
+                    if q["difficulty"] == st.session_state.difficulty
+                    and q["question"] not in st.session_state.used_questions
+                ]
+
+            if not candidates:
+                candidates = [
+                    q for q in questions
+                    if q["question"] not in st.session_state.used_questions
+                ]
+
+            if not candidates:
+                st.session_state.finished = True
+                st.rerun()
+
+            st.session_state.current_question = random.choice(candidates)
+
+    q = st.session_state.current_question
+
+    st.subheader(f"Вопрос {st.session_state.question_number}")
+    st.progress((st.session_state.question_number - 1) / 15)
 
     if group == "Экспериментальная":
         st.info(f"Сложность: {st.session_state.difficulty}")
 
     st.write(q["question"])
 
-    answer = st.radio("Ответ:", q["options"], key=st.session_state.q_num)
+    answer = st.radio("Ответ:", q["options"], index=None, key=st.session_state.question_number)
 
-    # ---------------- HINT ----------------
+# ---------------- HINT ----------------
 
-    if st.session_state.hint:
-        st.warning(st.session_state.hint_text)
-
-        if st.button("Далее"):
-            st.session_state.hint = False
-            st.session_state.hint_text = ""
-            st.session_state.q_num += 1
-            st.session_state.current_q = None
-            st.rerun()
-
-    # ---------------- ANSWER ----------------
-
-    if st.button("Ответить"):
-
-        if answer is None:
-            st.warning("Выбери ответ")
-            st.stop()
-
-        st.session_state.used.append(q["question"])
-
-        if answer == q["answer"]:
-
-            st.success("Верно!")
-            st.session_state.score += 1
-
-            if group == "Экспериментальная":
-                order = ["easy", "medium", "hard"]
-                i = order.index(st.session_state.difficulty)
-
-                if i < 2:
-                    st.session_state.difficulty = order[i + 1]
-
-        else:
-
-            st.error("Неверно!")
-
-            if group == "Экспериментальная":
-                st.session_state.hint = True
-                st.session_state.hint_text = q["hint"]
-
-                if st.session_state.difficulty == "hard":
-                    st.session_state.difficulty = "medium"
-                elif st.session_state.difficulty == "medium":
-                    st.session_state.difficulty = "easy"
-
-        st.session_state.q_num += 1
-        st.session_state.current_q = None
+if st.session_state.show_hint:
+    st.warning(st.session_state.last_hint)
+    if st.button("Далее"):
+        st.session_state.show_hint = False
+        st.session_state.last_hint = ""
+        st.session_state.question_number += 1
+        st.session_state.current_question = None
         st.rerun()
+
+# ---------------- ANSWER ----------------
+
+if st.button("Ответить"):
+
+    if answer is None:
+        st.warning("Выберите ответ!")
+        st.stop()
+
+    q = st.session_state.current_question
+    st.session_state.used_questions.append(q["question"])
+
+    if answer == q["answer"]:
+        st.success("Верно!")
+        st.session_state.score += 1
+
+        if group == "Экспериментальная":
+            if st.session_state.difficulty == "easy":
+                st.session_state.difficulty = "medium"
+            elif st.session_state.difficulty == "medium":
+                st.session_state.difficulty = "hard"
+
+    else:
+        st.error("Неверно!")
+        if group == "Экспериментальная":
+            st.session_state.show_hint = True
+            st.session_state.last_hint = q["hint"]
+
+            if st.session_state.difficulty == "hard":
+                st.session_state.difficulty = "medium"
+            elif st.session_state.difficulty == "medium":
+                st.session_state.difficulty = "easy"
+
+    st.session_state.question_number += 1
+    st.session_state.current_question = None
+    st.rerun()
 
 # ---------------- RESULT ----------------
 
 else:
 
-    st.success(f"{name}: {st.session_state.score} / 15")
+    st.success(f"{name}, результат: {st.session_state.score} из 15")
+
+    df = pd.DataFrame([{
+        "Имя": name,
+        "Группа": group,
+        "Баллы": st.session_state.score
+    }])
+
+    if os.path.exists(file):
+        old = pd.read_csv(file)
+        pd.concat([old, df], ignore_index=True).to_csv(file, index=False)
+    else:
+        df.to_csv(file, index=False)
+
+    if st.button("Начать заново"):
+        st.session_state.clear()
+        st.rerun()
