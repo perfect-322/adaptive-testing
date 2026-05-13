@@ -242,13 +242,14 @@ else:
 if not st.session_state.finished:
 
     if available_questions:
-
+        # ПРОВЕРКА: Если текущий вопрос еще не выбран ИЛИ он не соответствует текущей сложности (для экспериментальной группы)
+        # Это заставит систему перевыбрать вопрос сразу после изменения сложности
         if st.session_state.current_question is None:
-
-            if group == "Контрольная":
-                st.session_state.current_question = random.choice(available_questions)
-            else:
-                st.session_state.current_question = random.choice(available_questions)
+            st.session_state.current_question = random.choice(available_questions)
+        
+        # Дополнительная проверка для экспериментальной группы, чтобы вопрос точно соответствовал сложности
+        elif group == "Экспериментальная" and st.session_state.current_question["difficulty"] != st.session_state.difficulty:
+            st.session_state.current_question = random.choice(available_questions)
 
         q = st.session_state.current_question
 
