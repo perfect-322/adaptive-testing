@@ -243,7 +243,7 @@ if not st.session_state.finished:
     q = st.session_state.current_question
 
     st.subheader(f"Вопрос {st.session_state.question_number}")
-    st.progress(st.session_state.question_number / 15)
+    st.progress((st.session_state.question_number - 1) / 15)
 
     if group == "Экспериментальная":
         st.info(f"Сложность: {st.session_state.difficulty}")
@@ -256,47 +256,65 @@ if not st.session_state.finished:
         index=None,
         key=st.session_state.question_number
     )
+# ---------------- ПОДСКАЗКА ----------------
 
-    # ---------------- ОТВЕТ ----------------
+if st.session_state.show_hint:
+    st.warning(f"Подсказка: {st.session_state.last_hint}")
 
-    if st.button("Ответить"):
+    if st.button("Далее"):
+        st.session_state.show_hint = False
+        st.session_state.last_hint = ""
 
-        if answer is None:
-            st.warning("Выберите ответ!")
-            st.stop()
+        st.session_state.question_number += 1
+        st.session_state.current_question = None
+        st.rerun()
 
-        st.session_state.used_questions.append(q["question"])
+# ---------------- ОТВЕТ ----------------
 
-        if answer == q["answer"]:
+if st.button("Ответить"):
 
-            st.success("Верно!")
-            st.session_state.score += 1
+    if answer is None:
+        st.warning("Выберите ответ!")
+        st.stop()
 
-            if group == "Экспериментальная":
+    st.session_state.used_questions.append(q["question"])
 
-                levels = ["easy", "medium", "hard"]
-                idx = levels.index(st.session_state.difficulty)
+    if answer == q["answer"]:
 
-                if idx < 2:
-                    next_level = levels[idx + 1]
+        st.success("Верно!")
+        st.session_state.score += 1
 
-                    if any(
-                        q["difficulty"] == next_level
-                        and q["question"] not in st.session_state.used_questions
-                        for q in questions
-                    ):
-                        st.session_state.difficulty = next_level
+        if group == "Экспериментальная":
 
-        else:
+            levels = ["easy", "medium", "hard"]
+            idx = levels.index(st.session_state.difficulty)
 
-            st.error("Неверно!")
+            if idx < 2:
+                next_level = levels[idx + 1]
 
-            if group == "Экспериментальная":
+                if any(
+                    q["difficulty"] == next_level
+                    and q["question"] not in st.session_state.used_questions
+                    for q in questions
+                ):
+                    st.session_state.difficulty = next_level
 
-                if st.session_state.difficulty == "hard":
-                    st.session_state.difficulty = "medium"
-                elif st.session_state.difficulty == "medium":
-                    st.session_state.difficulty = "easy"
+        st.session_state.question_number += 1
+        st.session_state.current_question = None
+        st.rerun()
+
+    else:
+
+        st.error("Неверно!")
+
+        if group == "Экспериментальная":
+            st.session_state.show_hint = True
+            st.session_state.last_hint = q["hint"]
+
+            if st.session_state.difficulty == "hard":
+                st.session_state.difficulty = "medium"
+            elif st.session_state.difficulty == "medium":
+                st.session_state.difficulty = "easy"
 
         st.session_state.question_number += 1
         st.session_state.current_question = None
