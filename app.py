@@ -294,10 +294,9 @@ if not st.session_state.finished:
                 st.session_state.current_question = None
                 st.rerun()
 
-        # ---------------- ОТВЕТ ----------------
+# ---------------- ОТВЕТ ----------------
 
         elif st.button("Ответить"):
-
             if answer is None:
                 st.warning("Выберите ответ!")
                 st.stop()
@@ -305,39 +304,38 @@ if not st.session_state.finished:
             st.session_state.used_questions.append(q["question"])
 
             if answer == q["answer"]:
-
                 st.success("Верно!")
                 st.session_state.score += 1
-
-                st.session_state.current_question = None
+                
+                # Сбрасываем вопрос, чтобы ТЕСТ выбрал новый
+                st.session_state.current_question = None 
 
                 if group == "Экспериментальная":
+                    # Четкая логика перехода ВВЕРХ
                     if st.session_state.difficulty == "easy":
                         st.session_state.difficulty = "medium"
                     elif st.session_state.difficulty == "medium":
                         st.session_state.difficulty = "hard"
-
+                
                 st.session_state.question_number += 1
-                st.session_state.current_question = None
                 st.rerun()
 
             else:
-
                 st.error("Неверно!")
-
                 if group == "Экспериментальная":
                     st.session_state.show_hint = True
                     st.session_state.last_hint = q["hint"]
-
+                    
+                    # Логика перехода ВНИЗ при ошибке (сработает после кнопки "Далее")
+                    # Мы меняем сложность здесь, чтобы кнопка "Далее" уже знала новый уровень
                     if st.session_state.difficulty == "hard":
                         st.session_state.difficulty = "medium"
                     elif st.session_state.difficulty == "medium":
                         st.session_state.difficulty = "easy"
-
                 else:
                     st.session_state.question_number += 1
                     st.session_state.current_question = None
-
+                
                 st.rerun()
 
 # ---------------- РЕЗУЛЬТАТ ----------------
