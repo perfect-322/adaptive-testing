@@ -290,4 +290,3 @@ if st.button("Очистить результаты"):
         os.remove(file)
         st.success("results.csv удалён")
         st.rerun()
- 
