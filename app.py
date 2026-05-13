@@ -264,7 +264,6 @@ if st.session_state.show_hint:
     if st.button("Далее"):
         st.session_state.show_hint = False
         st.session_state.last_hint = ""
-
         st.session_state.question_number += 1
         st.session_state.current_question = None
         st.rerun()
@@ -273,13 +272,18 @@ if st.session_state.show_hint:
 
 if st.button("Ответить"):
 
+    if st.session_state.current_question is None:
+        st.stop()
+
     if answer is None:
         st.warning("Выберите ответ!")
         st.stop()
 
-    st.session_state.used_questions.append(q["question"])
+    q_obj = st.session_state.current_question
 
-    if answer == q["answer"]:
+    st.session_state.used_questions.append(q_obj["question"])
+
+    if answer == q_obj["answer"]:
 
         st.success("Верно!")
         st.session_state.score += 1
@@ -289,19 +293,15 @@ if st.button("Ответить"):
             levels = ["easy", "medium", "hard"]
             idx = levels.index(st.session_state.difficulty)
 
-            if idx < 2:
+            if idx < len(levels) - 1:
                 next_level = levels[idx + 1]
 
                 if any(
-                    q["difficulty"] == next_level
-                    and q["question"] not in st.session_state.used_questions
-                    for q in questions
+                    item["difficulty"] == next_level
+                    and item["question"] not in st.session_state.used_questions
+                    for item in questions
                 ):
                     st.session_state.difficulty = next_level
-
-        st.session_state.question_number += 1
-        st.session_state.current_question = None
-        st.rerun()
 
     else:
 
@@ -309,16 +309,16 @@ if st.button("Ответить"):
 
         if group == "Экспериментальная":
             st.session_state.show_hint = True
-            st.session_state.last_hint = q["hint"]
+            st.session_state.last_hint = q_obj["hint"]
 
             if st.session_state.difficulty == "hard":
                 st.session_state.difficulty = "medium"
             elif st.session_state.difficulty == "medium":
                 st.session_state.difficulty = "easy"
 
-        st.session_state.question_number += 1
-        st.session_state.current_question = None
-        st.rerun()
+    st.session_state.question_number += 1
+    st.session_state.current_question = None
+    st.rerun()
 
 # ---------------- РЕЗУЛЬТАТ ----------------
 
