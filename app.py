@@ -50,27 +50,28 @@ if "show_hint" not in st.session_state:
     st.session_state.show_hint = False
 if "last_hint" not in st.session_state:
     st.session_state.last_hint = ""
-if "streak_hard" not in st.session_state:          # ← НОВОЕ
+if "streak_hard" not in st.session_state:
     st.session_state.streak_hard = 0
 
 # ---------------- ЗАВЕРШЕНИЕ ----------------
-if st.session_state.question_number > 15:          # ← ИЗМЕНЕНО с 5 на 15
+if st.session_state.question_number > 15:
     st.session_state.finished = True
 
 # ---------------- ФИЛЬТР ВОПРОСОВ ----------------
 if group == "Экспериментальная":
+    # Основной фильтр по текущей сложности
     available_questions = [
         q for q in questions
         if q["difficulty"] == st.session_state.difficulty
         and q["question"] not in st.session_state.used_questions
     ]
+    # Если вопросов нужной сложности не осталось — берём любые
     if not available_questions:
         available_questions = [
             q for q in questions
             if q["question"] not in st.session_state.used_questions
         ]
 else:
-    # Контрольная группа — все вопросы в случайном порядке
     available_questions = [
         q for q in questions
         if q["question"] not in st.session_state.used_questions
@@ -83,8 +84,9 @@ if not st.session_state.finished:
             st.session_state.current_question = random.choice(available_questions)
         
         q = st.session_state.current_question
+        
         st.subheader(f"Вопрос {st.session_state.question_number} из 15")
-        st.progress((st.session_state.question_number - 1) / 15)   # ← ИЗМЕНЕНО
+        st.progress((st.session_state.question_number - 1) / 15)
         
         if group == "Экспериментальная":
             st.info(f"Сложность: {st.session_state.difficulty}")
@@ -92,7 +94,7 @@ if not st.session_state.finished:
                 st.caption(f"Серия правильных ответов на Hard: {st.session_state.streak_hard}/5")
         
         st.write(q["question"])
-        answer = st.radio("Ответ:", q["options"], index=None, key=st.session_state.question_number)
+        answer = st.radio("Ответ:", q["options"], index=None, key=f"q_{st.session_state.question_number}")
 
         # ---------------- ПОДСКАЗКА ----------------
         if st.session_state.show_hint:
@@ -112,11 +114,13 @@ if not st.session_state.finished:
 
             st.session_state.used_questions.append(q["question"])
 
-            if answer == q["answer"]:  # ПРАВИЛЬНЫЙ ОТВЕТ
+            if answer == q["answer"]:  # ==================== ВЕРНО ====================
                 st.success("Верно!")
                 st.session_state.score += 1
 
                 if group == "Экспериментальная":
+                    old_difficulty = st.session_state.difficulty
+                    
                     if st.session_state.difficulty == "easy":
                         st.session_state.difficulty = "medium"
                         st.session_state.streak_hard = 0
@@ -134,7 +138,7 @@ if not st.session_state.finished:
                 st.session_state.current_question = None
                 st.rerun()
 
-            else:  # НЕПРАВИЛЬНЫЙ ОТВЕТ
+            else:  # ==================== НЕВЕРНО ====================
                 st.error("Неверно!")
                 if group == "Экспериментальная":
                     st.session_state.show_hint = True
@@ -164,16 +168,12 @@ else:
         new.to_csv(file, index=False)
     else:
         df.to_csv(file, index=False)
+    
     st.info("Результат сохранён")
     
     if os.path.exists(file):
         with open(file, "rb") as f:
-            st.download_button(
-                label="Скачать результаты CSV",
-                data=f,
-                file_name="results.csv",
-                mime="text/csv"
-            )
+            st.download_button("Скачать результаты CSV", data=f, file_name="results.csv", mime="text/csv")
     
     if st.button("Начать заново"):
         for key in list(st.session_state.keys()):
