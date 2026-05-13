@@ -216,41 +216,26 @@ if st.session_state.question_number > 5:
 
 # ---------------- ФИЛЬТР ----------------
 
-# ---------------- ФИЛЬТР И ВЫБОР ----------------
+if group == "Экспериментальная":
 
-if not st.session_state.finished:
-    # 1. Сначала определяем список доступных вопросов
-    if group == "Экспериментальная":
-        # Фильтруем по ТЕКУЩЕЙ сложности и тем, что еще НЕ были использованы
-        valid_options = [
-            q for q in questions 
-            if q["difficulty"] == st.session_state.difficulty 
-            and q["question"] not in st.session_state.used_questions
+    available_questions = [
+        q for q in questions
+        if q["difficulty"] == st.session_state.difficulty
+        and q["question"] not in st.session_state.used_questions
+    ]
+
+    if not available_questions:
+        available_questions = [
+            q for q in questions
+            if q["question"] not in st.session_state.used_questions
         ]
-        
-        # Если вдруг вопросы нужной сложности закончились (защита от ошибки)
-        if not valid_options:
-            valid_options = [q for q in questions if q["question"] not in st.session_state.used_questions]
-    else:
-        # Для контрольной группы просто берем любые неиспользованные
-        valid_options = [q for q in questions if q["question"] not in st.session_state.used_questions]
 
-    # 2. Выбираем текущий вопрос, если он еще не выбран
-    if st.session_state.current_question is None and valid_options:
-        st.session_state.current_question = random.choice(valid_options)
+else:
 
-    # 3. Отображение вопроса
-    if st.session_state.current_question:
-        q = st.session_state.current_question
-        
-        st.subheader(f"Вопрос {st.session_state.question_number}")
-        st.progress((st.session_state.question_number - 1) / 5)
-
-        if group == "Экспериментальная":
-            st.info(f"Текущая сложность: {st.session_state.difficulty}")
-
-        st.write(q["question"])
-        # ... далее ваш код с radio и кнопкой "Ответить"
+    available_questions = [
+        q for q in questions
+        if q["question"] not in st.session_state.used_questions
+    ]
 
 # ---------------- ТЕСТ ----------------
 
