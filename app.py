@@ -217,15 +217,15 @@ if st.session_state.question_number > 15:
 # ---------------- ФИЛЬТР ----------------
 
 if group == "Экспериментальная":
+    # Сначала проверяем, есть ли вопросы той сложности, которая сейчас в стейте
     available_questions = [
         q for q in questions
         if q["difficulty"] == st.session_state.difficulty
         and q["question"] not in st.session_state.used_questions
     ]
 
-    # Если вопросы текущей сложности кончились, ищем замену
+    # Если их нет, СРАЗУ меняем сложность на доступную, не дожидаясь отрисовки
     if not available_questions:
-        # Проверяем другие уровни сложности по порядку
         for alt_diff in ["medium", "hard", "easy"]: 
             alt_questions = [
                 q for q in questions
@@ -236,14 +236,13 @@ if group == "Экспериментальная":
                 st.session_state.difficulty = alt_diff
                 available_questions = alt_questions
                 break
-
-    # Если всё еще пусто (крайний случай, когда вопросы кончились совсем)
+    
+    # Если всё еще пусто — берем остатки
     if not available_questions:
         available_questions = [
             q for q in questions
             if q["question"] not in st.session_state.used_questions
         ]
-
 else:
     available_questions = [
         q for q in questions
@@ -302,12 +301,10 @@ if not st.session_state.finished:
             if answer == q["answer"]:
                 st.success("Верно!")
                 st.session_state.score += 1
-                
-                # Сбрасываем вопрос, чтобы ТЕСТ выбрал новый
-                st.session_state.current_question = None 
+                st.session_state.current_question = None # Обнуляем для выбора нового
 
                 if group == "Экспериментальная":
-                    # Четкая логика перехода ВВЕРХ
+                    # Логика повышения
                     if st.session_state.difficulty == "easy":
                         st.session_state.difficulty = "medium"
                     elif st.session_state.difficulty == "medium":
@@ -321,9 +318,7 @@ if not st.session_state.finished:
                 if group == "Экспериментальная":
                     st.session_state.show_hint = True
                     st.session_state.last_hint = q["hint"]
-                    
-                    # Логика перехода ВНИЗ при ошибке (сработает после кнопки "Далее")
-                    # Мы меняем сложность здесь, чтобы кнопка "Далее" уже знала новый уровень
+                    # Сложность понизится ТУТ, и кнопка "Далее" подхватит уже новую
                     if st.session_state.difficulty == "hard":
                         st.session_state.difficulty = "medium"
                     elif st.session_state.difficulty == "medium":
@@ -333,7 +328,7 @@ if not st.session_state.finished:
                     st.session_state.current_question = None
                 
                 st.rerun()
-
+                
 # ---------------- РЕЗУЛЬТАТ ----------------
 
 else:
