@@ -217,32 +217,26 @@ if st.session_state.question_number > 15:
 # ---------------- ФИЛЬТР ----------------
 
 if group == "Экспериментальная":
-    # Сначала проверяем, есть ли вопросы той сложности, которая сейчас в стейте
+    # 1. Сначала пытаемся найти вопросы ТЕКУЩЕЙ сложности
     available_questions = [
         q for q in questions
         if q["difficulty"] == st.session_state.difficulty
         and q["question"] not in st.session_state.used_questions
     ]
 
-    # Если их нет, СРАЗУ меняем сложность на доступную, не дожидаясь отрисовки
+    # 2. Если их нет, значит мы исчерпали этот уровень. 
+    # Сразу переключаем сложность на ту, где вопросы ЕЩЕ ЕСТЬ.
     if not available_questions:
-        for alt_diff in ["medium", "hard", "easy"]: 
+        for check_diff in ["medium", "hard", "easy"]:
             alt_questions = [
                 q for q in questions
-                if q["difficulty"] == alt_diff
+                if q["difficulty"] == check_diff
                 and q["question"] not in st.session_state.used_questions
             ]
             if alt_questions:
-                st.session_state.difficulty = alt_diff
+                st.session_state.difficulty = check_diff
                 available_questions = alt_questions
                 break
-    
-    # Если всё еще пусто — берем остатки
-    if not available_questions:
-        available_questions = [
-            q for q in questions
-            if q["question"] not in st.session_state.used_questions
-        ]
 else:
     available_questions = [
         q for q in questions
@@ -301,15 +295,15 @@ if not st.session_state.finished:
             if answer == q["answer"]:
                 st.success("Верно!")
                 st.session_state.score += 1
-                st.session_state.current_question = None # Обнуляем для выбора нового
-
+                
+                # ВАЖНО: Сначала меняем сложность, потом обнуляем вопрос
                 if group == "Экспериментальная":
-                    # Логика повышения
                     if st.session_state.difficulty == "easy":
                         st.session_state.difficulty = "medium"
                     elif st.session_state.difficulty == "medium":
                         st.session_state.difficulty = "hard"
                 
+                st.session_state.current_question = None 
                 st.session_state.question_number += 1
                 st.rerun()
 
