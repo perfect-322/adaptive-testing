@@ -155,14 +155,13 @@ if not st.session_state.finished:
         
         if group == "Экспериментальная":
             
-            # НОВЫЙ БЛОК: Жестко фиксируем первый вопрос
+            # 1. Если это самый первый вопрос — берем строго первый Medium из списка
             if st.session_state.question_number == 1:
-                # Берем самый первый вопрос со сложностью medium из списка
                 medium_questions = [q for q in questions if q["difficulty"] == "medium"]
                 st.session_state.current_question = medium_questions[0]
                 st.session_state.difficulty = "medium"
                 
-            # Старая логика для 2-го и последующих вопросов
+            # 2. Логика для всех последующих вопросов
             else:
                 available_questions = [
                     q for q in questions 
@@ -170,7 +169,7 @@ if not st.session_state.finished:
                     and q["question"] not in st.session_state.used_questions
                 ]
                 
-                # Если вопросы нужной сложности закончились (Fall-back логика)
+                # Fall-back (если нужная сложность закончилась)
                 if not available_questions:
                     if st.session_state.difficulty == "hard":
                         available_questions = [q for q in questions if q["difficulty"] == "medium" and q["question"] not in st.session_state.used_questions]
@@ -189,10 +188,11 @@ if not st.session_state.finished:
                 
                 if available_questions:
                     st.session_state.current_question = random.choice(available_questions)
+                    # Синхронизируем сложность сессии с реально выбранным вопросом
                     st.session_state.difficulty = st.session_state.current_question["difficulty"]
-                
+        
         else:
-            # Для контрольной группы берем любой неиспользованный вопрос
+            # Логика для Контрольной группы (полный рандом)
             available_questions = [
                 q for q in questions 
                 if q["question"] not in st.session_state.used_questions
