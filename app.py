@@ -337,7 +337,7 @@ if not st.session_state.finished:
 
 else:
 
-    st.success(f"{name}, результат: {st.session_state.score} из 5")
+    st.success(f"{name}, результат: {st.session_state.score} из 15")
 
     df = pd.DataFrame({
         "Имя": [name],
