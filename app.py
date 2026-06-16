@@ -211,7 +211,7 @@ if "last_hint" not in st.session_state:
 
 # ---------------- ЗАВЕРШЕНИЕ ----------------
 
-if st.session_state.question_number > 15:
+if st.session_state.question_number > 5:
     st.session_state.finished = True
 
 # ---------------- ФИЛЬТР ----------------
@@ -254,7 +254,7 @@ if not st.session_state.finished:
         q = st.session_state.current_question
 
         st.subheader(f"Вопрос {st.session_state.question_number}")
-        st.progress((st.session_state.question_number - 1) / 15)
+        st.progress((st.session_state.question_number - 1) / 5)
 
         if group == "Экспериментальная":
             st.info(f"Сложность: {st.session_state.difficulty}")
@@ -337,7 +337,7 @@ if not st.session_state.finished:
 
 else:
 
-    st.success(f"{name}, результат: {st.session_state.score} из 15")
+    st.success(f"{name}, результат: {st.session_state.score} из 5")
 
     df = pd.DataFrame({
         "Имя": [name],
